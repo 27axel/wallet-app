@@ -16,3 +16,37 @@ databaseChangeLog:
                   type: DECIMAL(19, 2)
                   constraints:
                     nullable: false
+
+  - changeSet:
+      id: 2
+      author: Aleksey
+      changes:
+        - insert:
+            tableName: wallet
+            columns:
+              - column:
+                  name: id
+                  value: "e7b8a59e-4f2e-4fda-82d4-4d1c2b9d7a7b"
+              - column:
+                  name: balance
+                  valueNumeric: 1000.00
+
+        - insert:
+            tableName: wallet
+            columns:
+              - column:
+                  name: id
+                  value: "c0a8012b-4c0a-4d3b-90d4-6e4d9b2d7c1f"
+              - column:
+                  name: balance
+                  valueNumeric: 500.00
+
+        - insert:
+            tableName: wallet
+            columns:
+              - column:
+                  name: id
+                  value: "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              - column:
+                  name: balance
+                  valueNumeric: 1500.00
