@@ -1,11 +1,10 @@
 package com.wallet.api.walletapp.controller;
 
-import com.wallet.api.walletapp.dto.TransactionRequest;
+import com.wallet.api.walletapp.dto.WalletRequest;
 import com.wallet.api.walletapp.service.WalletService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @RestController
@@ -18,16 +17,13 @@ public class WalletController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> processTransaction(@RequestBody TransactionRequest request) {
-        walletService.processTransaction(
-                request.getWalletId(),
-                request.getOperationType(),
-                request.getAmount());
+    public ResponseEntity<Void> updateWallet(@RequestBody WalletRequest request) {
+        walletService.updateWallet(request);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{walletId}")
-    public ResponseEntity<BigDecimal> getBalance(@PathVariable UUID walletId) {
+    public ResponseEntity<Double> getBalance(@PathVariable UUID walletId) {
         return ResponseEntity.ok(walletService.getBalance(walletId));
     }
 }

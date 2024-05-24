@@ -1,12 +1,14 @@
 package com.wallet.api.walletapp.service;
 
+import com.wallet.api.walletapp.dto.WalletRequest;
+import com.wallet.api.walletapp.entity.OperationType;
 import com.wallet.api.walletapp.entity.Wallet;
 import com.wallet.api.walletapp.exception.InsufficientFundsException;
 import com.wallet.api.walletapp.exception.WalletNotFoundException;
 import com.wallet.api.walletapp.repository.WalletRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Service
@@ -17,21 +19,23 @@ public class WalletService {
         this.walletRepository = walletRepository;
     }
 
-    public void processTransaction(UUID walletId, String operationType, BigDecimal amount) {
-        Wallet wallet = walletRepository.findById(walletId)
+    @Transactional
+    public void updateWallet(WalletRequest request) {
+        Wallet wallet = walletRepository.findById(request.getWalletId())
                 .orElseThrow(() -> new WalletNotFoundException("Wallet not found"));
 
-        if (operationType.equals("DEPOSIT")) {
-            wallet.setBalance(wallet.getBalance().add(amount));
-        } else if (operationType.equals("WITHDRAW")) {
-            if (wallet.getBalance().compareTo(amount) < 0) {
+        if (request.getOperationType().equals(OperationType.DEPOSIT)) {
+            wallet.setBalance(request.getAmount() + wallet.getBalance());
+        } else if (request.getOperationType().equals(OperationType.WITHDRAW)) {
+            if (wallet.getBalance() < 0 || wallet.getBalance() < request.getAmount()) {
                 throw new InsufficientFundsException("Insufficient funds");
             }
-            wallet.setBalance(wallet.getBalance().subtract(amount));
+            wallet.setBalance(wallet.getBalance() - request.getAmount());
         }
+        walletRepository.save(wallet);
     }
 
-    public BigDecimal getBalance(UUID walletId) {
+    public double getBalance(UUID walletId) {
         Wallet wallet = walletRepository.findById(walletId)
                 .orElseThrow(() -> new WalletNotFoundException("Wallet not found"));
         return wallet.getBalance();
