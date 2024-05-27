@@ -7,6 +7,7 @@ import com.wallet.api.walletapp.exception.InsufficientFundsException;
 import com.wallet.api.walletapp.exception.WalletNotFoundException;
 import com.wallet.api.walletapp.repository.WalletRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
@@ -19,9 +20,9 @@ public class WalletService {
         this.walletRepository = walletRepository;
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void updateWallet(WalletRequest request) {
-        Wallet wallet = walletRepository.findById(request.getWalletId())
+        Wallet wallet = walletRepository.findByIdWithLock(request.getWalletId())
                 .orElseThrow(() -> new WalletNotFoundException("Wallet not found"));
 
         if (request.getOperationType().equals(OperationType.DEPOSIT)) {
